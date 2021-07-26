@@ -42,7 +42,7 @@ class User extends Common
             ->limit($tableWhere['offset'], $tableWhere['limit'])->select();
         $result['code'] = 0;
         $result['msg'] = '';
-        $result['count'] = $this->leftJoin('user_role_rel urr', 'urr.user_id = u.id')
+        $result['count'] = $this->alias('u')->leftJoin('user_role_rel urr', 'urr.user_id = u.id')
             ->leftJoin('user_role ur', 'ur.id = urr.role_id')
             ->where($tableWhere['where'])->count();
         $result['data'] = $this->tableFormat($list);
@@ -59,7 +59,7 @@ class User extends Common
      */
     protected function tableWhere($data): array
     {
-        $where = ['u.id', '<>', $this::TYPE_SUPER_ID];
+        $where = [];
         if (isset($data['username']) && $data['username'] != "") {
             $where[] = ['u.username', 'like', '%' . $data['username'] . '%'];
         }

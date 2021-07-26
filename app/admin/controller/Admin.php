@@ -34,22 +34,33 @@ class Admin extends BaseController
         parent::initialize();
 
         //没有登陆，请先登录
-        if (!session('user')) {
-            return $this->redirect((string)url('login/index'));
-        }
-        $this->user = session('user');
+//        if (!session('user')) {
+//            return $this->redirect((string)url('login/index'));
+//        }
+//        $this->user = session('user');
+        $this->user = [
+            "id"          => 1,
+            "username"    => "admin",
+            "mobile"      => "15938754096",
+            "avatar"      => null,
+            "name"        => "吴嘉晨",
+            "status"      => 1,
+            "create_time" => "2021-06-17 10:40:26",
+            "update_time" => "2021-06-17 10:40:26",
+            "delete_time" => 0
+        ];
 
         if ($this->request->isPost()) {
             // token校验
             $result = $this->checkToken();
             if ($result['code'] != 0) {
-                return show($result['code']);
+                return show($result);
             }
 
             // 权限校验
             $result = $this->checkPerm();
             if ($result['code'] != 0) {
-                return show($result['code']);
+                return show($result);
             }
 
             // 记录操作日志

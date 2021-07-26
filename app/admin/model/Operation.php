@@ -26,7 +26,7 @@ class Operation extends Common
     //不需要权限判断的控制器和方法
     private $noPerm = [
         self::MENU_MANAGE => [
-            'Index' => ['index', 'welcome'],
+            'Index' => ['index'],
             'Login' => ['index', 'login', 'logout'],
         ],
     ];
@@ -203,12 +203,11 @@ class Operation extends Common
      * 获取后台菜单信息
      *
      * @param false $is_super
-     * @param int   $user_id
      * @param array $roles
      *
      * @return array
      */
-    public function userMenu($is_super = false, $user_id = 0, $roles = []): array
+    public function userMenu($is_super = false, $roles = []): array
     {
         //普通管理员，取所有的角色所对应的权限
         try {

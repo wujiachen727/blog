@@ -1,0 +1,29 @@
+{if $menuList}
+{foreach $menuList as $k=>$v}
+<li class="layui-nav-item" data-name="{:strtolower($v['code'])}">
+    {if isset($v['children']) && !empty($v['children'])}
+    <a lay-tips="{$v.name}" lay-direction="2"><i class="layui-icon layui-icon-{:strtolower($v['code'])}"></i>&emsp;<cite>{$v.name}</cite></a>
+    <dl class="layui-nav-child">
+        {foreach $v['children'] as $x=>$y}
+        {if isset($y['children']) && !empty($y['children'])}
+        <dd data-name="{:strtolower($y['code'])}">
+            <a>{$y.name}</a>
+            <dl class="layui-nav-child">
+                {foreach $y['children'] as $a=>$b}
+                <dd data-name="{:strtolower($b['code'])}" class="{if $b.selected} layui-this{/if}"><a lay-href="{$b.url}">{$b.name}</a></dd>
+                {/foreach}
+            </dl>
+        </dd>
+        {else /}
+        <dd><a lay-href="{$y.url}">{$y.name}</a></dd>
+        {/if}
+        {/foreach}
+    </dl>
+    {else /}
+    <a lay-href="{$v.url}" lay-tips="{$v.name}" lay-direction="2">
+        <i class="layui-icon layui-icon-{:strtolower($v['code'])}"></i><cite>{$v.name}</cite>
+    </a>
+    {/if}
+</li>
+{/foreach}
+{/if}

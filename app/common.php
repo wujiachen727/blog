@@ -49,6 +49,17 @@ function show($result): Json
 }
 
 /**
+ * 生成令牌
+ * @return string
+ */
+function buildToken(): string
+{
+    $data = request()->buildToken('__token__', 'sha1');
+
+    return '<input type="hidden" name="__token__" value="' . $data . '" class="token">';
+}
+
+/**
  * 获取客户端IP地址
  *
  * @return mixed
@@ -75,9 +86,9 @@ function get_client_ip(): string
  */
 function get_lately_days($day, $data): array
 {
-    $day  = $day - 1;
+    $day = $day - 1;
     $days = [];
-    $d    = [];
+    $d = [];
     for ($i = $day; $i >= 0; $i--) {
         $d[] = date('d', strtotime('-' . $i . ' day')) . '日';
         $days[date('Y-m-d', strtotime('-' . $i . ' day'))] = 0;
@@ -89,5 +100,6 @@ function get_lately_days($day, $data): array
     foreach ($days as $v) {
         $new[] = $v;
     }
+
     return ['day' => $d, 'data' => $new];
 }

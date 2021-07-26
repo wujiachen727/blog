@@ -113,7 +113,7 @@ class UserRoleOperationRel extends Common
         $list = $this->distinct(true)->field('o.*')->alias('uror')
             ->join(config('database.prefix') . 'operation o', 'o.id = uror.operation_id')
             ->join(config('database.prefix') . 'user_role_rel urr', 'uror.user_role_id = urr.role_id')
-            ->where('mrr.manage_id', '=', $user_id)
+            ->where('urr.user_id', '=', $user_id)
             ->select();
         if ($list->isEmpty()) {
             $list = [];

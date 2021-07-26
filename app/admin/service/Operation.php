@@ -180,10 +180,10 @@ class Operation
                 $roles = [];
             }
 
-            $menu = $operationModel->userMenu(false, $user_id, $roles);
+            $menu = $operationModel->userMenu(false, $roles);
         }
         //写入缓存
-        cache('user_operation_' . $user_id, json_encode($menu), 3600);
+//        cache('user_operation_' . $user_id, json_encode($menu), 3600);
 
         return $menu;
     }
