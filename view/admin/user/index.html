@@ -1,0 +1,110 @@
+{include file="home/header"  title="系统管理—用户管理"/}
+<body>
+<div class="layui-fluid">
+    <div class="layui-card">
+        <div class="layui-card-body">
+            <!-- 表格检索栏 -->
+            <div class="layui-form-item">
+                <div class="layui-inline">
+                    <label class="layui-form-label">登录名</label>
+                    <div class="layui-input-block">
+                        <input type="text" id="username" name="username" placeholder="请输入" autocomplete="off" class="layui-input">
+                    </div>
+                </div>
+                <div class="layui-inline">
+                    <label class="layui-form-label">昵称</label>
+                    <div class="layui-input-block">
+                        <input type="text" id="nickname" name="nickname" placeholder="请输入" autocomplete="off" class="layui-input">
+                    </div>
+                </div>
+                <div class="layui-inline">
+                    <label class="layui-form-label">手机</label>
+                    <div class="layui-input-block">
+                        <input type="number" id="mobile" name="mobile" placeholder="请输入" autocomplete="off" class="layui-input">
+                    </div>
+                </div>
+                <div class="layui-inline">
+                    <label class="layui-form-label">邮箱</label>
+                    <div class="layui-input-block">
+                        <input type="text" id="email" name="email" placeholder="请输入" autocomplete="off" class="layui-input">
+                    </div>
+                </div>
+                <div class="layui-inline">
+                    <button id="btnSearch" class="layui-btn layuiadmin-btn-admin" lay-submit lay-filter="btnSearch">
+                        <i class="layui-icon layui-icon-search layuiadmin-button-btn"></i>
+                    </button>
+                </div>
+            </div>
+            <!-- 表格工具栏 -->
+            <div style="padding-bottom: 10px;">
+                <button class="layui-btn layuiadmin-btn-admin" data-type="batchdel">删除</button>
+                <button class="layui-btn layuiadmin-btn-admin" data-type="add">添加</button>
+            </div>
+        </div>
+        <table id="adminUserTable" lay-filter="adminUserTable"></table>
+    </div>
+</div>
+<!-- 表格操作列 -->
+<script type="text/html" id="tableBar">
+    <a class="layui-btn layui-btn-primary layui-btn-xs" lay-event="edit">修改</a>
+    <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">
+        <i class="layui-icon layui-icon-delete"></i> 删除
+    </a>
+    <a class="layui-btn layui-btn-xs" lay-event="reset">重置密码</a>
+</script>
+
+<!-- 表格状态列 -->
+<script type="text/html" id="tableStatus">
+    <input type="checkbox" lay-filter="adminUserStatus" value="{{d.id}}" lay-skin="switch" style="width: 40px"
+           lay-text="正常|锁定" {{d.status==1?'checked':''}}/>
+</script>
+<script type="text/javascript" src="https://www.layuicdn.com/layui/layui.js"></script>
+<script type="text/javascript" src="__ADMIN__/assets/js/common.js?v=318"></script>
+<script>
+    layui.define(['tableX','admin'], function () {
+        var $ = layui.$;
+        var form = layui.form;
+        var table = layui.table;
+        var tableX = layui.tableX;
+
+        // 渲染表格
+        var adminUserTable = tableX.render({
+            id: "#adminUserTable",
+            elem: '#adminUserTable',
+            url: "{:url('user/getUserList')}",
+            title: '后台用户表',
+            text: {none: '暂无相关数据'},
+            page: true,
+            limit: 20,
+            limits: [30, 60, 90],
+            even: true,//开启隔行背景
+            height: 'full-120',
+            cols: [[
+                {type: 'numbers', align: 'center', width: 30},
+                {field: 'id', sort: true, title: 'ID', type: 'checkbox', width: 30},
+                {field: 'username', sort: true, title: '账号', width: 100},
+                {field: 'nickname', sort: true, title: '昵称', width: 100},
+                {field: 'mobile', sort: true, title: '手机号码', minwidth: 120},
+                {field: 'create_time', sort: true, title: '加入时间', minwidth: 160},
+                {templet: '#tableStatus', title: '状态', width: 100},
+                {align: 'center', toolbar: '#tableBar', title: '操作', width: 300}
+            ]]
+        });
+
+        // 搜索
+        $('#btnSearch').click(function () {
+            var nickname = $("#nickname").val();
+            var username = $("#username").val();
+            var mobile = $("#mobile").val();
+            var email = $("#email").val();
+            adminUserTable.reload({
+                where: {username: username, nickname: nickname, mobile: mobile, email: email},
+                page: {
+                    curr: 1
+                }
+            }, 'data');
+        });
+    });
+</script>
+</body>
+</html>
