@@ -36,13 +36,13 @@ function error_code($code = 10000, $msg = ""): Json
  */
 function show($result): Json
 {
-    if ($result['code'] != 0) {
-        return error_code($result['code'], $result['msg']);
-    }
-
     //如果消息提示为空，并且业务状态码定义了，那么就显示默认定义的消息提示
     if (isset($result['msg']) && empty($result['msg']) && !empty(config("status." . $result['code']))) {
         $result['msg'] = config("status." . $result['code']);
+    }
+
+    if ($result['code'] != 0) {
+        return error_code($result['code'], $result['msg']);
     }
 
     return json($result);

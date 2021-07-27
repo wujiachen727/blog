@@ -1,5 +1,6 @@
 <?php
-declare (strict_types=1);
+
+declare(strict_types=1);
 
 namespace app;
 
@@ -19,21 +20,18 @@ abstract class BaseController
      * @var \think\Request
      */
     protected $request;
-
     /**
      * 应用实例
      *
      * @var \think\App
      */
     protected $app;
-
     /**
      * 是否批量验证
      *
      * @var bool
      */
     protected $batchValidate = false;
-
     /**
      * 控制器中间件
      *
@@ -52,7 +50,6 @@ abstract class BaseController
     {
         $this->app = $app;
         $this->request = $this->app->request;
-
         // 控制器初始化
         $this->initialize();
     }
@@ -108,7 +105,6 @@ abstract class BaseController
         }
 
         $v->message($message);
-
         // 是否批量验证
         if ($batch || $this->batchValidate) {
             $v->batch(true);
@@ -116,5 +112,4 @@ abstract class BaseController
 
         return $v->failException(true)->check($data);
     }
-
 }

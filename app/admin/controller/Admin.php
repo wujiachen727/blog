@@ -10,7 +10,6 @@ use app\admin\service\Operation;
 use app\BaseController;
 use think\exception\HttpResponseException;
 use think\facade\Log;
-use think\response\Json;
 
 /**
  * 公共Controller
@@ -27,12 +26,10 @@ class Admin extends BaseController
      * token验证，防止csrf攻击
      * 记录操作日志
      *
-     * @return Json|void
+     * @return void
      */
     protected function initialize()
     {
-        parent::initialize();
-
         //没有登陆，请先登录
 //        if (!session('user')) {
 //            return $this->redirect((string)url('login/index'));
@@ -43,7 +40,7 @@ class Admin extends BaseController
             "username"    => "admin",
             "mobile"      => "15938754096",
             "avatar"      => null,
-            "name"        => "吴嘉晨",
+            "nickname"    => "慕楣少年",
             "status"      => 1,
             "create_time" => "2021-06-17 10:40:26",
             "update_time" => "2021-06-17 10:40:26",
@@ -54,19 +51,19 @@ class Admin extends BaseController
             // token校验
             $result = $this->checkToken();
             if ($result['code'] != 0) {
-                return show($result);
+                $response = error_code($result['code']);
+                throw new HttpResponseException($response);
             }
 
             // 权限校验
             $result = $this->checkPerm();
             if ($result['code'] != 0) {
-                return show($result);
+                $response = show($result);
+                throw new HttpResponseException($response);
             }
 
             // 记录操作日志
             $this->record();
-
-
             return;
         }
     }
@@ -74,7 +71,7 @@ class Admin extends BaseController
     /**
      * token校验,防止csrf攻击
      *
-     * @return int[]
+     * @return array
      */
     private function checkToken(): array
     {
@@ -96,7 +93,7 @@ class Admin extends BaseController
      *
      * @return array
      */
-    public function checkPerm(): array
+    private function checkPerm(): array
     {
         $ctlName = $this->request->controller();
         $actName = $this->request->action();
