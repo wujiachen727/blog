@@ -37,6 +37,13 @@ class Role extends Admin
         return show($result);
     }
 
+    public function getRoleNameList()
+    {
+        $result = (new UserRoleService())->getRoleNameList();
+
+        return show($result);
+    }
+
     /**
      * 显示创建资源表单页.
      *

@@ -8,6 +8,7 @@ use app\admin\model\UserRole as UserRoleModel;
 use app\admin\model\UserRoleOperationRel;
 use app\admin\model\Operation;
 use Exception;
+use think\Collection;
 use think\Model;
 
 class UserRole
@@ -22,6 +23,23 @@ class UserRole
     public function getRoleList($data = []): array
     {
         return (new UserRoleModel())->getRoleList($data);
+    }
+
+    /**
+     * 获取角色列表
+     *
+     * @return array
+     */
+    public function getRoleNameList(): array
+    {
+        try {
+            $userRoleModel = new UserRoleModel();
+            $result = $userRoleModel->field('id as value,name')->select()->toArray();
+        } catch (Exception $e) {
+            $result = [];
+        }
+
+        return $result;
     }
 
     /**

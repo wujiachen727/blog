@@ -1,0 +1,78 @@
+<form id="adminUserForm" lay-filter="adminUserForm" class="layui-form model-form">
+    <input name="id" type="hidden"/>
+    <div class="layui-form-item">
+        <label class="layui-form-label layui-form-required">账号</label>
+        <div class="layui-input-block">
+            <label>
+                <input type="text" name="username" lay-verify="required" placeholder="请输入账号" autocomplete="off"
+                       class="layui-input" lay-verType="tips">
+            </label>
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <label class="layui-form-label layui-form-required">昵称</label>
+        <div class="layui-input-block">
+            <label>
+                <input type="text" name="nickname" lay-verify="required" placeholder="请输入昵称" autocomplete="off"
+                       class="layui-input" lay-verType="tips">
+            </label>
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <label class="layui-form-label layui-form-required">手机</label>
+        <div class="layui-input-block">
+            <label>
+                <input type="text" name="mobile" lay-verify="mobile" placeholder="请输入号码" autocomplete="off"
+                       class="layui-input" lay-verType="tips">
+            </label>
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <label class="layui-form-label">角色</label>
+        <div class="layui-input-block">
+            <div id="userEditRoleSel"></div>
+        </div>
+    </div>
+    <div class="layui-form-item text-right">
+        <button class="layui-btn layui-btn-primary" type="button" ew-event="closePageDialog">取消</button>
+        <button class="layui-btn" lay-filter="modelUserSubmit" lay-submit>保存</button>
+    </div>
+</form>
+<div style="text-align: center;color: red">
+    注意：角色未选中时，将保持原角色不变
+</div>
+<script>
+    layui.use(['admin', 'xmSelect'], function () {
+        var $ = layui.jquery;
+        var layer = layui.layer;
+        var form = layui.form;
+        var admin = layui.admin;
+        var xmSelect = layui.xmSelect;
+
+        var mUser = admin.getLayerData('#adminUserForm').user; // 列表页面传递的数据
+        form.val('adminUserForm', mUser);//回显数据
+
+        //表单提交
+        form.on('submit(modelUserSubmit)', function (data) {
+            layer.load(2);
+            admin.req("{:url('user/update1')}", data.field, function (res) {
+                layer.closeAll('loading');
+                if (res.code === 0) {
+                    layer.msg(res.msg, {icon: 1});
+                    admin.putLayerData('formOk', true, "#adminUserForm");// 设置操作成功的标识
+                    admin.closeDialog("#adminUserForm");// 关闭页面层弹窗
+                } else {
+                    layer.msg(res.msg, {icon: 2});
+                }
+            }, 'post');
+            return false;
+        });
+
+        // 渲染多选下拉框
+        xmSelect.render({
+            el: '#userEditRoleSel',
+            name: 'roleIds',
+            data: JSON.parse('{$roleList|raw}')
+        });
+    });
+</script>

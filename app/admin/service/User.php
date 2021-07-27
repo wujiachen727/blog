@@ -130,7 +130,7 @@ class User
         $result = ['code' => 10000, 'msg' => ''];
         try {
             UserModel::destroy($id);
-            $result = ['code' => 0];
+            $result = ['code' => 0, 'msg' => '删除成功'];
         } catch (Exception $e) {
             $result['msg'] = $e->getMessage();
         }
@@ -232,6 +232,7 @@ class User
     public function changePwd($user_id, $oldPassword, $newPassword): array
     {
         $result = ['code' => 10000, 'msg' => ''];
+
         $userModel = new UserModel();
         $info = $userModel->where(['id' => $user_id])->findOrEmpty();
         if (empty($info)) {
@@ -253,6 +254,34 @@ class User
         if ($re) {
             $result['code'] = 0;
             $result['msg'] = '修改成功';
+        } else {
+            $result['code'] = 10006;
+        }
+
+        return $result;
+    }
+
+    /**
+     * 管理员重置密码
+     *
+     * @param $user_id
+     *
+     * @return array
+     */
+    public function resetPwd($user_id): array
+    {
+        $result = ['code' => 10000, 'msg' => ''];
+        $userModel = new UserModel();
+        $info = $userModel->where(['id' => $user_id])->findOrEmpty();
+        if (empty($info)) {
+            $result['code'] = 11000;
+
+            return $result;
+        }
+        $re = $info->allowField(['password'])->save(['password' => $this->encryPassword('1q2w3e')]);
+        if ($re) {
+            $result['code'] = 0;
+            $result['msg'] = '密码成功重置为1q2w3e，请尽快登录并修改保证数据安全';
         } else {
             $result['code'] = 10006;
         }

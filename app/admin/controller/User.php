@@ -4,11 +4,12 @@ declare(strict_types=1);
 
 namespace app\admin\controller;
 
+use app\admin\service\UserRole as UserRoleService;
 use think\Response;
 use app\admin\validate\User as UserValidate;
 use app\admin\service\User as UserService;
 use think\response\Json;
-use think\response\View;
+use think\facade\View;
 
 /**
  * 用户管理
@@ -19,13 +20,18 @@ use think\response\View;
 class User extends Admin
 {
     /**
-     * 显示资源列表
+     * 管理员列表
      *
-     * @return View
+     * @return string
      */
-    public function index(): View
+    public function index(): string
     {
-        return view();
+        $userRoleService = new UserRoleService();
+        $roleList = $userRoleService->getRoleNameList();
+
+        return View::fetch('index', [
+            'roleList' => json_encode($roleList)
+        ]);
     }
 
     /**
@@ -93,13 +99,16 @@ class User extends Admin
     /**
      * 显示编辑资源表单页.
      *
-     * @param int $id
-     *
-     * @return Response
+     * @return string
      */
-    public function edit($id)
+    public function edit(): string
     {
-        //
+        $userRoleService = new UserRoleService();
+        $roleList = $userRoleService->getRoleNameList();
+
+        return View::fetch('edit', [
+            'roleList' => json_encode($roleList)
+        ]);
     }
 
     /**
@@ -136,19 +145,24 @@ class User extends Admin
     public function delete(): Response
     {
         if ($this->request->isPost()) {
-            $id = $this->request->post('id');
+            $data = $this->request->post();
 
             $userValidate = new UserValidate();
-            if (!$userValidate->scene('del')->check($id)) {
+            if (!$userValidate->scene('del')->check($data)) {
                 return error_code(10001, $userValidate->getError());
             }
 
-            if ($id <= 0) {
+            if ($data['id'] <= 0) {
                 return error_code(10003);
             }
 
+            if ($data['id'] == 1) {
+                //超级管理员
+                return error_code(11005);
+            }
+
             $userService = new UserService();
-            $result = $userService->del($id);
+            $result = $userService->del($data['id']);
 
             return show($result);
         } else {
@@ -157,7 +171,7 @@ class User extends Admin
     }
 
     /**
-     * 用户修改密码
+     * 管理员修改密码
      *
      * @return Json
      */
@@ -173,6 +187,40 @@ class User extends Admin
 
             $userService = new UserService();
             $result = $userService->changePwd(session('user.id'), $data('password'), $data('newPwd'));
+
+            return show($result);
+        } else {
+            return error_code(100);
+        }
+    }
+
+    /**
+     * 管理员重置密码
+     *
+     * @return Json
+     */
+    public function resetPwd(): Json
+    {
+        if ($this->request->isPost()) {
+            $data = $this->request->post();
+
+            $userValidate = new UserValidate();
+            if (!$userValidate->scene('del')->check($data)) {
+                //借用删除场景检验
+                return error_code(10001, $userValidate->getError());
+            }
+
+            if ($data['id'] <= 0) {
+                return error_code(10003);
+            }
+
+            if ($data['id'] == 1) {
+                //超级管理员
+                return error_code(11005);
+            }
+
+            $userService = new UserService();
+            $result = $userService->resetPwd($data['id']);
 
             return show($result);
         } else {

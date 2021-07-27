@@ -20,8 +20,7 @@ function error_code($code = 10000, $msg = ""): Json
 
     $result = [
         'code'  => $code,
-        'msg'   => $msg,
-        'token' => request()->buildToken('__token__', 'sha1')//每次请求token都不同，防止重复提交
+        'msg'   => $msg
     ];
 
     return json($result);
@@ -46,17 +45,6 @@ function show($result): Json
     }
 
     return json($result);
-}
-
-/**
- * 生成令牌
- * @return string
- */
-function buildToken(): string
-{
-    $data = request()->buildToken('__token__', 'sha1');
-
-    return '<input type="hidden" name="__token__" value="' . $data . '" class="token">';
 }
 
 /**

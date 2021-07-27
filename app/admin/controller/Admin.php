@@ -47,45 +47,15 @@ class Admin extends BaseController
             "delete_time" => 0
         ];
 
-        if ($this->request->isPost()) {
-            // token校验
-            $result = $this->checkToken();
-            if ($result['code'] != 0) {
-                $response = error_code($result['code']);
-                throw new HttpResponseException($response);
-            }
-
-            // 权限校验
-            $result = $this->checkPerm();
-            if ($result['code'] != 0) {
-                $response = show($result);
-                throw new HttpResponseException($response);
-            }
-
-            // 记录操作日志
-            $this->record();
-            return;
-        }
-    }
-
-    /**
-     * token校验,防止csrf攻击
-     *
-     * @return array
-     */
-    private function checkToken(): array
-    {
-        $result = ['code' => 10002];
-
-        // 所有的post请求都必须token校验
-        $_token = input('__token__/s', '');
-        if ($_token != session('__token__')) {
-            return $result;
+        // 权限校验
+        $result = $this->checkPerm();
+        if ($result['code'] != 0) {
+            $response = json($result);
+            throw new HttpResponseException($response);
         }
 
-        $result['code'] = 0;
-
-        return $result;
+        // 记录操作日志
+        $this->record();
     }
 
     /**
