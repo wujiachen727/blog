@@ -46,7 +46,9 @@
                     <button id="btnSearch" class="layui-btn layuiadmin-btn-admin" lay-submit lay-filter="btnSearch">
                         <i class="layui-icon layui-icon-search layuiadmin-button-btn"></i>
                     </button>
-                    <button class="layui-btn layuiadmin-btn-admin" data-type="add">添加</button>
+                    <span class="layui-btn layuiadmin-btn-admin" data-type="add" id="btnAdd">
+                        <i class="layui-icon layui-icon-add-1 layuiadmin-button-btn"></i>
+                    </span>
                 </div>
             </form>
         </div>
@@ -55,61 +57,23 @@
 </div>
 <!-- 表格操作列 -->
 <script type="text/html" id="tableBar">
+    {{#  if(d.id > 1){ }}
     <a class="layui-btn layui-btn-primary layui-btn-xs" lay-event="edit">修改</a>
     <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">
         <i class="layui-icon layui-icon-delete"></i> 删除
     </a>
     <a class="layui-btn layui-btn-xs" lay-event="reset">重置密码</a>
+    {{#  } }}
 </script>
 
 <!-- 表格状态列 -->
 <script type="text/html" id="tableStatus">
+    {{#  if(d.id > 1){ }}
     <input type="checkbox" lay-filter="adminUserStatus" value="{{d.id}}" lay-skin="switch" style="width: 40px"
-           lay-text="正常|锁定" {{d.status==1?'checked':''}}/>
-</script>
-
-<!--表单弹窗-->
-<script type="text/html" id="userEditDialog">
-    <form id="adminUserForm" lay-filter="adminUserForm" class="layui-form model-form">
-        <input name="id" type="hidden"/>
-        <div class="layui-form-item">
-            <label class="layui-form-label layui-form-required">账号</label>
-            <div class="layui-input-block">
-                <label>
-                    <input type="text" name="username" lay-verify="required" placeholder="请输入账号" autocomplete="off"
-                           class="layui-input" lay-verType="tips">
-                </label>
-            </div>
-        </div>
-        <div class="layui-form-item">
-            <label class="layui-form-label layui-form-required">昵称</label>
-            <div class="layui-input-block">
-                <label>
-                    <input type="text" name="nickname" lay-verify="required" placeholder="请输入昵称" autocomplete="off"
-                           class="layui-input" lay-verType="tips">
-                </label>
-            </div>
-        </div>
-        <div class="layui-form-item">
-            <label class="layui-form-label layui-form-required">手机</label>
-            <div class="layui-input-block">
-                <label>
-                    <input type="text" name="mobile" lay-verify="mobile" placeholder="请输入号码" autocomplete="off"
-                           class="layui-input" lay-verType="tips">
-                </label>
-            </div>
-        </div>
-        <div class="layui-form-item">
-            <label class="layui-form-label layui-form-required">角色</label>
-            <div class="layui-input-block">
-                <div id="userEditRoleSel"></div>
-            </div>
-        </div>
-        <div class="layui-form-item text-right">
-            <button class="layui-btn layui-btn-primary" type="button" ew-event="closePageDialog">取消</button>
-            <button class="layui-btn" lay-filter="modelUserSubmit" lay-submit>保存</button>
-        </div>
-    </form>
+           lay-text="正常|停用" {{d.status==1?'checked':''}}/>
+    {{#  } else { }}
+    <input type="checkbox" value="{{d.id}}" lay-skin="switch" style="width: 40px" lay-text="正常" checked disabled/>
+    {{#  } }}
 </script>
 <script type="text/javascript" src="https://www.layuicdn.com/layui/layui.js"></script>
 <script type="text/javascript" src="__ADMIN__/assets/js/common.js?v=318"></script>
@@ -148,7 +112,7 @@
         });
 
         // 渲染多选下拉框
-        var roleSelect = xmSelect.render({
+        xmSelect.render({
             el: '#roleIds',
             name: 'roleIds',
             empty: '暂无数据',
@@ -156,6 +120,11 @@
             searchTips: '请输入角色名称',
             tips: '请选择角色',
             data: JSON.parse('{$roleList|raw}')
+        });
+
+        // 添加
+        $('#btnAdd').click(function () {
+            showEditModel();
         });
 
         //表格搜索
@@ -168,6 +137,11 @@
         table.on('tool(adminUserTable)', function (obj) {
             var data = obj.data;
             var layEvent = obj.event;
+            if (data.id === 1) {
+                //超级管理员
+                layer.msg('超级管理员信息不可更改，请联系平台管理员', {icon: 2});
+                return false;
+            }
             if (layEvent === 'edit') { // 修改
                 showEditModel(data);
             } else if (layEvent === 'del') { // 删除
@@ -177,11 +151,11 @@
             }
         });
 
+        //弹窗新增/编辑
         function showEditModel(mUser) {
             var layIndex = admin.open({
-                type: 1,
-                area: ['380px', '400px'],
-                title: mUser ? '修改' + mUser.username + '|' + mUser.id + '用户信息' : '添加用户信息',
+                area: ['500px', '450px'],
+                title: mUser ? '修改' + mUser.username + '|' + mUser.id + '管理员信息' : '添加管理员信息',
                 url: mUser ? 'edit.html?id=' + mUser.id : 'create.html',
                 data: {user: mUser},//传递数据到表单页面
                 success: function (layero, dIndex) {
@@ -236,6 +210,24 @@
                 }, 'post');
             });
         }
+
+        // 修改用户状态
+        form.on('switch(adminUserStatus)', function (obj) {
+            layer.load(2);
+            admin.req("{:url('user/updateStatus')}", {
+                id: obj.elem.value,
+                status: obj.elem.checked ? '1' : '2'
+            }, function (res) {
+                layer.closeAll('loading');
+                if (res.code === 0) {
+                    layer.msg(res.msg, {icon: 1});
+                } else {
+                    layer.msg(res.msg, {icon: 2});
+                    $(obj.elem).prop('checked', !obj.elem.checked);
+                    form.render('checkbox');
+                }
+            }, 'post');
+        });
     });
 </script>
 </body>

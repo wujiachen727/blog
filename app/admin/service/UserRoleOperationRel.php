@@ -21,7 +21,7 @@ class UserRoleOperationRel
      */
     public function checkPerm($user_id, $ctlName, $actName): array
     {
-        $result = ['code' => 10000, 'msg' => ''];
+        $result = ['code' => 10010, 'msg' => ''];//默认无操作权限
 
         $operationModel = new Operation();
 

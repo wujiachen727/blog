@@ -5,10 +5,10 @@ declare(strict_types=1);
 namespace app\admin\service;
 
 use app\admin\model\UserRole as UserRoleModel;
-use app\admin\model\UserRoleOperationRel;
+use app\admin\model\UserRoleOperationRel as UserRoleOperationRelModel;
+use app\admin\model\User as UserModel;
 use app\admin\model\Operation;
 use Exception;
-use think\Collection;
 use think\Model;
 
 class UserRole
@@ -34,7 +34,12 @@ class UserRole
     {
         try {
             $userRoleModel = new UserRoleModel();
-            $result = $userRoleModel->field('id as value,name')->select()->toArray();
+            //超级管理员角色不允许新增
+            $result = $userRoleModel->field('id as value,name')->where(
+                'id',
+                '>',
+                UserModel::TYPE_SUPER_ID
+            )->select()->toArray();
         } catch (Exception $e) {
             $result = [];
         }
@@ -73,7 +78,7 @@ class UserRole
     {
         $result = ['code' => 10000, 'msg' => ''];
         $userRoleModel = new UserRoleModel();
-        $userRoleOperationRelModel = new UserRoleOperationRel();
+        $userRoleOperationRelModel = new UserRoleOperationRelModel();
 
         $db = $userRoleModel->db(false);
         $db->startTrans();
@@ -124,7 +129,7 @@ class UserRole
             }
 
             //查找角色拥有的节点
-            $userRoleOperationRelModel = new UserRoleOperationRel();
+            $userRoleOperationRelModel = new UserRoleOperationRelModel();
             $permList = $userRoleOperationRelModel->where(['user_role_id' => $id])->select();
             if ($permList->isEmpty()) {
                 $nodeList = [];
@@ -154,7 +159,7 @@ class UserRole
     {
         $result = ['code' => 10000, 'msg' => ''];
         try {
-            $userRoleOperationRelModel = new UserRoleOperationRel();
+            $userRoleOperationRelModel = new UserRoleOperationRelModel();
             $userRoleOperationRelModel->savePerm($id, $data);
             $result['code'] = 0;
         } catch (Exception $e) {

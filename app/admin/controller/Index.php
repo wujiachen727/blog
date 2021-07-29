@@ -19,7 +19,7 @@ class Index extends Admin
     {
         return View::fetch('index', [
             'menuList' => $this->getMenuList(),
-            'userInfo' => $this->user
+            'userInfo' => $this->userInfo
         ]);
     }
 
@@ -30,7 +30,7 @@ class Index extends Admin
      */
     public function getMenuList(): array
     {
-        $userInfo = $this->user;
+        $userInfo = $this->userInfo;
         if (!$menuList = cache('user_operation_' . $userInfo['id'])) {
             //缓存为空或缓存到期
             $operationService = new OperationService();

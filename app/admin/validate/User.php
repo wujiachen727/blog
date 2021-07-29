@@ -50,7 +50,7 @@ class User extends Validate
     // 场景验证
     protected $scene = [
         //用户添加场景验证
-        'add'  => ['username', 'password', 'rePassword', 'mobile'],
+        'add'  => ['username', 'password', 'mobile'],
         //用户编辑场景验证
         'edit' => ['id', 'username', 'mobile'],
         //用户删除场景验证

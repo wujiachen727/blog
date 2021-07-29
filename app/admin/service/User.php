@@ -44,8 +44,8 @@ class User
 
             //设置角色
             $userRoleRelModel = new UserRoleRel();
-            if (isset($data['role_ids'])) {
-                $role_ids = explode(',', $data['role_ids']);
+            if (isset($data['roleIds']) && !empty($data['roleIds'])) {
+                $role_ids = explode(',', $data['roleIds']);
                 $arr = [];
                 foreach ($role_ids as $k => $v) {
                     $row['user_id'] = $userModel->id;
@@ -74,7 +74,7 @@ class User
      *
      * @param $data
      *
-     * @return array|int[]
+     * @return array
      */
     public function edit($data): array
     {
@@ -92,16 +92,16 @@ class User
         $db->startTrans();
         try {
             //防止用户修改敏感数据 比如密码等
-            $userInfo->allowField(['username', 'mobile', 'avatar', 'nickname'])->save($data);
+            $userInfo->allowField(['username', 'mobile', 'avatar', 'nickname','status'])->save($data);
 
-            //设置角色 清空所有的旧角色
-            $userRoleRelModel = new UserRoleRel();
-            $userRoleRelModel->where(['user_id' => $data['id']])->delete();
-            if (isset($data['role_ids'])) {
-                $role_ids = explode(',', $data['role_ids']);
+            if (isset($data['roleIds']) && !empty($data['roleIds'])) {
+                //设置角色 清空所有的旧角色
+                $userRoleRelModel = new UserRoleRel();
+                $userRoleRelModel->where(['user_id' => $data['id']])->delete();
+                $role_ids = explode(',', $data['roleIds']);
                 $arr = [];
                 foreach ($role_ids as $k => $v) {
-                    $row['user_id'] = $userModel->id;
+                    $row['user_id'] = $userInfo['id'];
                     $row['role_id'] = $v;
                     $arr[] = $row;
                 }
@@ -109,7 +109,7 @@ class User
             }
 
             $db->commit();
-            $result = ['code' => 0];
+            $result = ['code' => 0, 'msg' => '更新成功'];
         } catch (Exception $e) {
             $db->rollback();
             $result['msg'] = $e->getMessage();

@@ -19,7 +19,7 @@ use think\facade\Log;
  */
 class Admin extends BaseController
 {
-    protected $user;
+    protected $userInfo;
 
     /**
      * 判断是否登录
@@ -35,7 +35,7 @@ class Admin extends BaseController
 //            return $this->redirect((string)url('login/index'));
 //        }
 //        $this->user = session('user');
-        $this->user = [
+        $this->userInfo = [
             "id"          => 1,
             "username"    => "admin",
             "mobile"      => "15938754096",
@@ -50,7 +50,7 @@ class Admin extends BaseController
         // 权限校验
         $result = $this->checkPerm();
         if ($result['code'] != 0) {
-            $response = json($result);
+            $response = show($result);
             throw new HttpResponseException($response);
         }
 
@@ -71,7 +71,7 @@ class Admin extends BaseController
         //判断当前是否有权限操作
         $userRoleOperationRelService = new UserRoleOperationRel();
 
-        return $userRoleOperationRelService->checkPerm(session('user.id'), $ctlName, $actName);
+        return $userRoleOperationRelService->checkPerm($this->userInfo['id'], $ctlName, $actName);
     }
 
     /**
@@ -79,7 +79,6 @@ class Admin extends BaseController
      */
     private function record()
     {
-        $user = session('user');
         $ctl = strtolower(request()->controller());
         $act = strtolower(request()->action());
         $operation = new Operation();
@@ -88,8 +87,8 @@ class Admin extends BaseController
             $postData = $this->request->post();
             $decs = $opInfo['data']['act']['name'];
             $log = [
-                'user_id'    => $user['id'],
-                'username'   => $user['username'],
+                'user_id'    => $this->userInfo['id'],
+                'username'   => $this->userInfo['username'],
                 'controller' => $ctl,
                 'method'     => $act,
                 'desc'       => $decs,

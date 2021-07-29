@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace app\admin\controller;
 
 use app\admin\service\UserRole as UserRoleService;
-use think\Response;
 use app\admin\validate\User as UserValidate;
 use app\admin\service\User as UserService;
 use think\response\Json;
@@ -30,7 +29,8 @@ class User extends Admin
         $roleList = $userRoleService->getRoleNameList();
 
         return View::fetch('index', [
-            'roleList' => json_encode($roleList)
+            'roleList' => json_encode($roleList),
+            'userInfo' => $this->userInfo
         ]);
     }
 
@@ -50,11 +50,16 @@ class User extends Admin
     /**
      * 显示创建资源表单页.
      *
-     * @return Response
+     * @return string
      */
-    public function create()
+    public function create(): string
     {
-        //
+        $userRoleService = new UserRoleService();
+        $roleList = $userRoleService->getRoleNameList();
+
+        return View::fetch('create', [
+            'roleList' => json_encode($roleList)
+        ]);
     }
 
     /**
@@ -85,18 +90,6 @@ class User extends Admin
     }
 
     /**
-     * 显示指定的资源
-     *
-     * @param int $id
-     *
-     * @return Response
-     */
-    public function read($id)
-    {
-        //
-    }
-
-    /**
      * 显示编辑资源表单页.
      *
      * @return string
@@ -114,17 +107,54 @@ class User extends Admin
     /**
      * 保存更新的资源
      *
-     * @return Response
+     * @return Json
      */
-    public function update(): Response
+    public function update(): Json
     {
         if ($this->request->isPost()) {
             $data = $this->request->post();
-            $data['delete_time'] = 0;// 防止删除用户
 
             $userValidate = new UserValidate();
             if (!$userValidate->scene('edit')->check($data)) {
                 return error_code(10001, $userValidate->getError());
+            }
+
+            if ($data['id'] <= 0) {
+                return error_code(10003);
+            }
+
+            if ($data['id'] == 1) {
+                //超级管理员
+                return error_code(11005);
+            }
+
+            //更新管理员信息
+            $userService = new UserService();
+            $result = $userService->edit($data);
+
+            return show($result);
+        } else {
+            return error_code(100);
+        }
+    }
+
+    /**
+     * 管理员状态更新
+     *
+     * @return Json
+     */
+    public function updateStatus(): Json
+    {
+        if ($this->request->isPost()) {
+            $data = $this->request->post();
+
+            if ($data['id'] <= 0) {
+                return error_code(10003);
+            }
+
+            if ($data['id'] == 1) {
+                //超级管理员
+                return error_code(11005);
             }
 
             //更新管理员信息
@@ -140,9 +170,9 @@ class User extends Admin
     /**
      * 删除指定资源
      *
-     * @return Response
+     * @return Json
      */
-    public function delete(): Response
+    public function delete(): Json
     {
         if ($this->request->isPost()) {
             $data = $this->request->post();
