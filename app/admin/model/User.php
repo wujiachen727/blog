@@ -59,7 +59,7 @@ class User extends Common
      */
     protected function tableWhere($data): array
     {
-        $where = [];
+        $where[] = ['u.id', '<>', $this::TYPE_SUPER_ID];
         if (isset($data['username']) && $data['username'] != "") {
             $where[] = ['u.username', 'like', '%' . $data['username'] . '%'];
         }
@@ -70,10 +70,7 @@ class User extends Common
             $where[] = ['u.mobile', 'like', '%' . $data['mobile'] . '%'];
         }
         if (isset($data['status']) && $data['status'] != "") {
-            $where[] = ['u.status', '=', $data['status']];
-        }
-        if (isset($data['roleIdS']) && $data['roleIdS'] != "") {
-            $where[] = ['ur.id', 'in', $data['roleIdS']];
+            $where[] = ['u.status', '=', $data['mobile']];
         }
 
         $order = "u.id asc";
