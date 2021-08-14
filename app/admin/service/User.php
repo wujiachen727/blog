@@ -18,7 +18,7 @@ class User
      *
      * @return array
      */
-    public function getUserList($data = []): array
+    public function getUserList(array $data = []): array
     {
         return (new UserModel())->getUserList($data);
     }

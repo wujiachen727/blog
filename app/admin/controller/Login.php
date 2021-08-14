@@ -26,7 +26,7 @@ class Login extends BaseController
     /**
      * 管理员登录
      *
-     * @return mixed|string|Json|Redirect
+     * @return Json|Redirect
      */
     public function login()
     {

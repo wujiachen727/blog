@@ -53,7 +53,7 @@ class UserLog extends Common
             ->limit($tableWhere['offset'], $tableWhere['limit'])->select();
         $result['code'] = 0;
         $result['msg'] = '';
-        $result['count'] = $this->leftjoin('user u', 'u.id = ul.user_id')->where($tableWhere['where'])->count();
+        $result['count'] = $this->alias('ul')->leftjoin('user u', 'u.id = ul.user_id')->where($tableWhere['where'])->count();
         $result['data'] = $this->tableFormat($list);
 
         return $result;
