@@ -91,7 +91,7 @@
         //弹窗新增/编辑
         function showEditModel(mRole) {
             var layIndex = admin.open({
-                area: ['500px', '450px'],
+                area: ['500px', '200px'],
                 title: mRole ? '修改' + mRole.name + '|' + mRole.id + '角色信息' : '添加角色信息',
                 url: mRole ? 'edit.html?id=' + mRole.id : 'create.html',
                 data: {role: mRole},//传递数据到表单页面

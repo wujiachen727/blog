@@ -36,11 +36,8 @@ class UserRole
         try {
             $userRoleModel = new UserRoleModel();
             //超级管理员角色不允许新增
-            $result = $userRoleModel->field('id as value,name')->where(
-                'id',
-                '>',
-                UserModel::TYPE_SUPER_ID
-            )->select()->toArray();
+            $result = $userRoleModel->field('id as value,name')->where('id', '>', UserModel::TYPE_SUPER_ID)
+                ->select()->toArray();
         } catch (Exception $e) {
             $result = [];
         }
@@ -80,7 +77,7 @@ class UserRole
         $result = ['code' => 10000, 'msg' => ''];
         $userRoleModel = new UserRoleModel();
         //判断角色是否存在
-        $userRoleInfo = $userRoleModel->where(['id', $data['id']])->findOrEmpty();
+        $userRoleInfo = $userRoleModel->where(['id' => $data['id']])->findOrEmpty();
         if (empty($userRoleInfo)) {
             $result['code'] = 12000;
 

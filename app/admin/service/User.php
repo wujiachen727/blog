@@ -45,9 +45,9 @@ class User
             //设置角色
             $userRoleRelModel = new UserRoleRel();
             if (isset($data['roleIds']) && !empty($data['roleIds'])) {
-                $role_ids = explode(',', $data['roleIds']);
+                $roleIds = explode(',', $data['roleIds']);
                 $arr = [];
-                foreach ($role_ids as $k => $v) {
+                foreach ($roleIds as $v) {
                     $row['user_id'] = $userModel->id;
                     $row['role_id'] = $v;
                     $arr[] = $row;
@@ -98,9 +98,9 @@ class User
                 //设置角色 清空所有的旧角色
                 $userRoleRelModel = new UserRoleRel();
                 $userRoleRelModel->where(['user_id' => $data['id']])->delete();
-                $role_ids = explode(',', $data['roleIds']);
+                $roleIds = explode(',', $data['roleIds']);
                 $arr = [];
-                foreach ($role_ids as $k => $v) {
+                foreach ($roleIds as $v) {
                     $row['user_id'] = $userInfo['id'];
                     $row['role_id'] = $v;
                     $arr[] = $row;

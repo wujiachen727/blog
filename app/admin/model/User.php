@@ -72,6 +72,9 @@ class User extends Common
         if (isset($data['status']) && $data['status'] != "") {
             $where[] = ['u.status', '=', $data['mobile']];
         }
+        if (isset($data['roleIds']) && $data['roleIds'] != "") {
+            $where[] = ['ur.id', 'in', $data['roleIds']];
+        }
 
         $order = "u.id asc";
         if (isset($data['sort']) && $data['sort'] != "") {
