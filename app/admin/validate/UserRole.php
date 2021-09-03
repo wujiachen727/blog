@@ -31,6 +31,8 @@ class UserRole extends Validate
     // 场景验证
     protected $scene = [
         // 角色添加场景验证
-        'add' => ['name']
+        'add' => ['name'],
+        // 角色编辑场景验证
+        'edit' => ['id', 'name'],
     ];
 }

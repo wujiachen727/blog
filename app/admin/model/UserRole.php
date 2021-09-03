@@ -21,7 +21,18 @@ class UserRole extends Common
      */
     public function getRoleList($data): array
     {
-        return $this->getTableDataList($data, $this->tableWhere($data));
+        $tableWhere = $this->tableWhere($data);
+        $list = $this->field($tableWhere['field'])->alias('a')
+            ->leftJoin('user b', 'a.create_id = b.id')
+            ->where($tableWhere['where'])->order($tableWhere['order'])
+            ->limit($tableWhere['offset'], $tableWhere['limit'])->select();
+        $result['code'] = 0;
+        $result['msg'] = '';
+        $result['count'] = $this->alias('a')->leftJoin('user b', 'a.create_id = b.id')
+            ->where($tableWhere['where'])->count();
+        $result['data'] = $this->tableFormat($list);
+
+        return $result;
     }
 
     /**
@@ -35,19 +46,19 @@ class UserRole extends Common
     {
         $where = [];
         if (isset($data['name']) && $data['name'] != "") {
-            $where[] = ['name', 'like', '%' . $data['name'] . '%'];
+            $where[] = ['a.name', 'like', '%' . $data['name'] . '%'];
         }
 
-        $order = "update_time desc";
+        $order = "a.update_time desc";
         if (isset($data['sort']) && $data['sort'] != "") {
-            $order = $data['sort'] . " " . $data['order'];
+            $order = "a." . $data['sort'] . " " . $data['order'];
         }
 
         $page = (int)$data['page'] ?: 1;                  //默认第1页
         $result['limit'] = (int)$data['limit'] ?: 20;     //默认20条数据
 
         $result['where'] = $where;
-        $result['field'] = "*";
+        $result['field'] = "a.id,a.name,a.create_time,a.update_time,b.username as create_name";
         $result['order'] = $order;
         $result['offset'] = ($page - 1) * $result['limit'];
 

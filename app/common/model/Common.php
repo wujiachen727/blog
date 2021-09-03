@@ -18,11 +18,11 @@ class Common extends Model
      * 获取数据列表
      *
      * @param $data
-     * @param $where
+     * @param array $where
      *
      * @return array
      */
-    public function getTableDataList($data, $where = []): array
+    public function getTableDataList($data, array $where = []): array
     {
         try {
             $tableWhere = $where ?: $this->tableWhere($data);

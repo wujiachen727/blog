@@ -5,13 +5,15 @@ declare(strict_types=1);
 namespace app\admin\controller;
 
 use app\admin\validate\UserRole;
-use think\Request;
+use app\admin\validate\UserRole as UserRoleValidate;
 use think\Response;
 use app\admin\service\UserRole as UserRoleService;
-use app\admin\validate\UserRole as UserRoleValidate;
 use think\response\Json;
 use think\response\View;
 
+/**
+ * 后台管理员角色类
+ */
 class Role extends Admin
 {
     /**
@@ -37,7 +39,12 @@ class Role extends Admin
         return show($result);
     }
 
-    public function getRoleNameList()
+    /**
+     * 获取角色名称列表
+     *
+     * @return Json
+     */
+    public function getRoleNameList(): Json
     {
         $result = (new UserRoleService())->getRoleNameList();
 
@@ -47,11 +54,11 @@ class Role extends Admin
     /**
      * 显示创建资源表单页.
      *
-     * @return Response
+     * @return View
      */
-    public function create()
+    public function create(): View
     {
-        //
+        return view();
     }
 
     /**
@@ -71,6 +78,8 @@ class Role extends Admin
 
             $userRoleService = new UserRoleService();
             unset($data['id']);
+            $data['create_id'] = $this->userInfo['id'];
+            $data['update_id'] = $this->userInfo['id'];
             $result = $userRoleService->add($data);
 
             return show($result);
@@ -80,40 +89,48 @@ class Role extends Admin
     }
 
     /**
-     * 显示指定的资源
+     * 显示编辑资源表单页
      *
-     * @param int $id
-     *
-     * @return Response
+     * @return View
      */
-    public function read($id)
+    public function edit(): View
     {
-        //
-    }
-
-    /**
-     * 显示编辑资源表单页.
-     *
-     * @param int $id
-     *
-     * @return Response
-     */
-    public function edit($id)
-    {
-        //
+        return view();
     }
 
     /**
      * 保存更新的资源
      *
-     * @param \think\Request $request
-     * @param int            $id
-     *
      * @return Response
      */
-    public function update(Request $request, $id)
+    public function update(): Response
     {
-        //
+        if ($this->request->isPost()) {
+            $data = $this->request->post();
+
+            $userValidate = new UserRoleValidate();
+            if (!$userValidate->scene('edit')->check($data)) {
+                return error_code(10001, $userValidate->getError());
+            }
+
+            if ($data['id'] <= 0) {
+                return error_code(10003);
+            }
+
+            if ($data['id'] == 1) {
+                //超级管理员
+                return error_code(12005);
+            }
+
+            //更新管理员信息
+            $userService = new UserRoleService();
+            $data['update_id'] = $this->userInfo['id'];
+            $result = $userService->edit($data);
+
+            return show($result);
+        } else {
+            return error_code(100);
+        }
     }
 
     /**

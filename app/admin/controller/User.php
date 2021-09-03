@@ -11,10 +11,7 @@ use think\response\Json;
 use think\facade\View;
 
 /**
- * 用户管理
- *
- * Class User
- * @package app\admin\controller
+ * 后台管理员类
  */
 class User extends Admin
 {

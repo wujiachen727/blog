@@ -7,6 +7,7 @@ namespace app\admin\service;
 use app\admin\model\UserRole as UserRoleModel;
 use app\admin\model\UserRoleOperationRel as UserRoleOperationRelModel;
 use app\admin\model\User as UserModel;
+use app\admin\model\UserRoleRel as UserRoleRelModel;
 use app\admin\model\Operation;
 use Exception;
 use think\Model;
@@ -20,7 +21,7 @@ class UserRole
      *
      * @return array
      */
-    public function getRoleList($data = []): array
+    public function getRoleList(array $data = []): array
     {
         return (new UserRoleModel())->getRoleList($data);
     }
@@ -54,11 +55,39 @@ class UserRole
      *
      * @return array
      */
-    public function add($data = []): array
+    public function add(array $data): array
     {
         $result = ['code' => 10000, 'msg' => ''];
         try {
             UserRoleModel::create($data);
+            $result['code'] = 0;
+        } catch (Exception $e) {
+            $result['msg'] = $e->getMessage();
+        }
+
+        return $result;
+    }
+
+    /**
+     * 角色更新
+     *
+     * @param array $data
+     *
+     * @return array
+     */
+    public function edit(array $data): array
+    {
+        $result = ['code' => 10000, 'msg' => ''];
+        $userRoleModel = new UserRoleModel();
+        //判断角色是否存在
+        $userRoleInfo = $userRoleModel->where(['id', $data['id']])->findOrEmpty();
+        if (empty($userRoleInfo)) {
+            $result['code'] = 12000;
+
+            return $result;
+        }
+        try {
+            $userRoleModel::update($data);
             $result['code'] = 0;
         } catch (Exception $e) {
             $result['msg'] = $e->getMessage();
@@ -74,12 +103,18 @@ class UserRole
      *
      * @return array
      */
-    public function del($id = 0): array
+    public function del(int $id = 0): array
     {
         $result = ['code' => 10000, 'msg' => ''];
+        $userRoleRelModel = new UserRoleRelModel();
+        $count = $userRoleRelModel->where(['role_id' => $id])->count();
+        if ($count > 0) {
+            $result['code'] = 12001;
+
+            return $result;
+        }
         $userRoleModel = new UserRoleModel();
         $userRoleOperationRelModel = new UserRoleOperationRelModel();
-
         $db = $userRoleModel->db(false);
         $db->startTrans();
         try {
@@ -102,7 +137,7 @@ class UserRole
      *
      * @return UserRoleModel|array|Model
      */
-    public function getRoleById($id = 0)
+    public function getRoleById(int $id = 0)
     {
         $userRoleModel = new UserRoleModel();
 
@@ -116,7 +151,7 @@ class UserRole
      *
      * @return array
      */
-    public function getRoleOperation($id = 0): array
+    public function getRoleOperation(int $id = 0): array
     {
         $result = ['code' => 10000, 'msg' => ''];
         try {
@@ -148,14 +183,14 @@ class UserRole
     }
 
     /**
-     * 保存角色
+     * 保存角色权限
      *
      * @param int   $id
      * @param array $data
      *
      * @return array
      */
-    public function savePerm($id = 0, $data = []): array
+    public function savePerm(int $id = 0, array $data = []): array
     {
         $result = ['code' => 10000, 'msg' => ''];
         try {

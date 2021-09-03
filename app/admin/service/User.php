@@ -26,11 +26,11 @@ class User
     /**
      * 管理员新增
      *
-     * @param $data
+     * @param array $data
      *
      * @return array
      */
-    public function add($data): array
+    public function add(array $data): array
     {
         $result = ['code' => 10000, 'msg' => ''];
         $userModel = new UserModel();
@@ -72,11 +72,11 @@ class User
     /**
      * 管理员更新
      *
-     * @param $data
+     * @param array $data
      *
      * @return array
      */
-    public function edit($data): array
+    public function edit(array $data): array
     {
         $result = ['code' => 10000, 'msg' => ''];
         $userModel = new UserModel();
@@ -141,11 +141,11 @@ class User
     /**
      * 管理员登录
      *
-     * @param $data
+     * @param array $data
      *
      * @return array
      */
-    public function login($data): array
+    public function login(array $data): array
     {
         $result = ['code' => 10000, 'msg' => ''];
         $userModel = new UserModel();
@@ -211,7 +211,7 @@ class User
     /**
      * 密码加密
      *
-     * @param $password
+     * @param string $password
      *
      * @return string
      */

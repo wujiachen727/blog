@@ -21,7 +21,7 @@ class UserRoleOperationRel extends Common
      *
      * @return bool
      */
-    public function savePerm($role_id = 0, $operations = []): bool
+    public function savePerm(int $role_id = 0, array $operations = []): bool
     {
         $db = $this->db(false);
         $db->startTrans();
@@ -31,7 +31,7 @@ class UserRoleOperationRel extends Common
 
             $data = [];
             $row['user_role_id'] = $role_id;
-            foreach ($operations as $k => $v) {
+            foreach ($operations as $v) {
                 $role_id['operation_id'] = $v['id'];
                 $data[] = $row;
             }

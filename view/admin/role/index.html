@@ -1,0 +1,133 @@
+{include file="home/header"  title="系统管理—用户管理"/}
+<body>
+<div class="layui-fluid">
+    <div class="layui-card">
+        <div class="layui-card-body">
+            <!-- 表格检索栏 -->
+            <form class="layui-form toolbar">
+                <div class="layui-inline">
+                    <label class="layui-form-label">角色名称</label>
+                    <div class="layui-input-block">
+                        <input type="text" id="name" name="name" placeholder="请输入角色名称" autocomplete="off"
+                               class="layui-input">
+                    </div>
+                </div>
+                <div class="layui-inline">
+                    <button id="btnSearch" class="layui-btn layuiadmin-btn-admin" lay-submit lay-filter="btnSearch">
+                        <i class="layui-icon layui-icon-search layuiadmin-button-btn"></i>
+                    </button>
+                    <span class="layui-btn layuiadmin-btn-admin" data-type="add" id="btnAdd">
+                        <i class="layui-icon layui-icon-add-1 layuiadmin-button-btn"></i>
+                    </span>
+                </div>
+            </form>
+        </div>
+        <table id="roleTable" lay-filter="roleTable"></table>
+    </div>
+</div>
+<!-- 表格操作列 -->
+<script type="text/html" id="tableBar">
+    {{#  if(d.id > 1){ }}
+    <a class="layui-btn layui-btn-primary layui-btn-xs" lay-event="edit">修改</a>
+    <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">
+        <i class="layui-icon layui-icon-delete"></i> 删除
+    </a>
+    {{#  } }}
+</script>
+<script type="text/javascript" src="https://www.layuicdn.com/layui/layui.js"></script>
+<script type="text/javascript" src="__ADMIN__/assets/js/common.js?v=318"></script>
+<script>
+    layui.define(['admin'], function () {
+        var $ = layui.$;
+        var form = layui.form;
+        var table = layui.table;
+        var admin = layui.admin;
+        var layer = layui.layer;
+
+        // 渲染表格
+        var roleTable = table.render({
+            id: "#roleTable",
+            elem: '#roleTable',
+            url: "{:url('role/getRoleList')}",
+            title: '后台角色表',
+            text: {none: '暂无相关数据'},
+            page: true,
+            limit: 20,
+            limits: [30, 60, 90],
+            even: true,//开启隔行背景
+            height: 'full-130',
+            cols: [[
+                {type: 'numbers', align: 'center', width: 30},
+                {field: 'name', sort: true, title: '角色名称', minwidth: 150},
+                {field: 'create_name', sort: true, title: '创建人账号', minwidth: 150},
+                {field: 'create_time', sort: true, title: '创建时间', minwidth: 160},
+                {field: 'update_time', sort: true, title: '更新时间', minwidth: 160},
+                {align: 'center', toolbar: '#tableBar', title: '操作', width: 300}
+            ]]
+        });
+
+        // 添加
+        $('#btnAdd').click(function () {
+            showEditModel();
+        });
+
+        //表格搜索
+        form.on('submit(btnSearch)', function (data) {
+            roleTable.reload({where: data.field, page: {curr: 1}});
+            return false;
+        });
+
+        // 工具条点击事件                             2
+        table.on('tool(roleTable)', function (obj) {
+            var data = obj.data;
+            var layEvent = obj.event;
+            if (layEvent === 'edit') { // 修改
+                showEditModel(data);
+            } else if (layEvent === 'del') { // 删除
+                del(data.id, data.name);
+            }
+        });
+
+        //弹窗新增/编辑
+        function showEditModel(mRole) {
+            var layIndex = admin.open({
+                area: ['500px', '450px'],
+                title: mRole ? '修改' + mRole.name + '|' + mRole.id + '角色信息' : '添加角色信息',
+                url: mRole ? 'edit.html?id=' + mRole.id : 'create.html',
+                data: {role: mRole},//传递数据到表单页面
+                success: function (layero, dIndex) {
+                    // 弹窗超出范围不出现滚动条
+                    $(layero).children('.layui-layer-content').css('overflow', 'visible');
+                },
+                end: function () {
+                    if (admin.getLayerData(layIndex, 'formOk')) {  //判断表单操作成功标识
+                        roleTable.reload();  //成功刷新表格
+                    }
+                }
+            });
+        }
+
+        //删除
+        function del(id, name) {
+            top.layer.confirm('确定要删除“' + name + '”吗？', {
+                skin: 'layui-layer-admin'
+            }, function (i) {
+                top.layer.close(i);
+                layer.load(2);
+                admin.req("{:url('role/delete')}", {
+                    id: id
+                }, function (res) {
+                    layer.closeAll('loading');
+                    if (res.code === 0) {
+                        layer.msg(res.msg, {icon: 1});
+                        roleTable.reload();
+                    } else {
+                        layer.msg(res.msg, {icon: 2});
+                    }
+                }, 'post');
+            });
+        }
+    });
+</script>
+</body>
+</html>
