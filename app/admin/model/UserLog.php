@@ -25,7 +25,7 @@ class UserLog extends Common
      * @param       $state
      * @param array $data
      */
-    public function saveLog($user_id, $state, $data = [])
+    public function saveLog($user_id, $state, array $data = [])
     {
         $data = [
             'user_id' => $user_id,
@@ -53,7 +53,8 @@ class UserLog extends Common
             ->limit($tableWhere['offset'], $tableWhere['limit'])->select();
         $result['code'] = 0;
         $result['msg'] = '';
-        $result['count'] = $this->alias('ul')->leftjoin('user u', 'u.id = ul.user_id')->where($tableWhere['where'])->count();
+        $result['count'] = $this->alias('ul')->leftjoin('user u', 'u.id = ul.user_id')
+            ->where($tableWhere['where'])->count();
         $result['data'] = $this->tableFormat($list);
 
         return $result;
@@ -109,8 +110,16 @@ class UserLog extends Common
             $order = "ul." . $data['sort'] . " " . $data['order'];
         }
 
-        $page = (int)$data['page'] ?: 1;                  //默认第1页
-        $result['limit'] = (int)$data['limit'] ?: 20;     //默认20条数据
+        if (isset($data['page']) && $data['page'] != "") {
+            $page = (int)$data['page'];
+        } else {
+            $page = 1;
+        }
+        if (isset($data['limit']) && $data['limit'] != "") {
+            $result['limit'] = (int)$data['limit'];
+        } else {
+            $result['limit'] = 20;
+        }
 
         $result['where'] = $where;
         $result['field'] = "ul.*";
@@ -125,9 +134,9 @@ class UserLog extends Common
      *
      * @param $list
      *
-     * @return mixed
+     * @return array
      */
-    protected function tableFormat($list)
+    protected function tableFormat($list): array
     {
         foreach ($list as $k => $v) {
             $list[$k]['state'] = config('params.user')['state'][$v['state']];

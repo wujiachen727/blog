@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace app\admin\controller;
 
-use think\Request;
 use app\admin\validate\Operation as OperationValidate;
 use app\admin\service\Operation as OperationService;
 use think\Response;
@@ -37,16 +36,6 @@ class Operation extends Admin
     }
 
     /**
-     * 显示创建资源表单页.
-     *
-     * @return Response
-     */
-    public function create()
-    {
-        //
-    }
-
-    /**
      * 保存新建的资源
      *
      * @return Response
@@ -68,43 +57,6 @@ class Operation extends Admin
         } else {
             return error_code(100);
         }
-    }
-
-    /**
-     * 显示指定的资源
-     *
-     * @param int $id
-     *
-     * @return Response
-     */
-    public function read($id)
-    {
-        //
-    }
-
-    /**
-     * 显示编辑资源表单页.
-     *
-     * @param int $id
-     *
-     * @return Response
-     */
-    public function edit($id)
-    {
-        //
-    }
-
-    /**
-     * 保存更新的资源
-     *
-     * @param \think\Request $request
-     * @param int            $id
-     *
-     * @return Response
-     */
-    public function update(Request $request, $id)
-    {
-        //
     }
 
     /**

@@ -20,7 +20,7 @@ class Operation extends Validate
         'code'           => 'require|length:3,20',
         'parent_menu_id' => 'require|integer',
         'type'           => 'require',
-        'perm_type'      => 'require',
+        'perm_type'      => 'require'
     ];
 
     /**

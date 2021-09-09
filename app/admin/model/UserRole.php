@@ -54,8 +54,16 @@ class UserRole extends Common
             $order = "a." . $data['sort'] . " " . $data['order'];
         }
 
-        $page = (int)$data['page'] ?: 1;                  //默认第1页
-        $result['limit'] = (int)$data['limit'] ?: 20;     //默认20条数据
+        if (isset($data['page']) && $data['page'] != "") {
+            $page = (int)$data['page'];
+        } else {
+            $page = 1;
+        }
+        if (isset($data['limit']) && $data['limit'] != "") {
+            $result['limit'] = (int)$data['limit'];
+        } else {
+            $result['limit'] = 20;
+        }
 
         $result['where'] = $where;
         $result['field'] = "a.id,a.name,a.create_time,a.update_time,b.username as create_name";

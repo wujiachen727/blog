@@ -81,8 +81,16 @@ class User extends Common
             $order = "u." . $data['sort'] . " " . $data['order'];
         }
 
-        $page = (int)$data['page'] ?: 1;                  //默认第1页
-        $result['limit'] = (int)$data['limit'] ?: 20;     //默认20条数据
+        if (isset($data['page']) && $data['page'] != "") {
+            $page = (int)$data['page'];
+        } else {
+            $page = 1;
+        }
+        if (isset($data['limit']) && $data['limit'] != "") {
+            $result['limit'] = (int)$data['limit'];
+        } else {
+            $result['limit'] = 20;
+        }
 
         $result['where'] = $where;
         $result['field'] = "u.id,u.username,u.mobile,u.avatar,u.nickname,u.status,u.create_time,u.update_time";

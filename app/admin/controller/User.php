@@ -62,9 +62,9 @@ class User extends Admin
     /**
      * 管理员新增
      *
-     * @return mixed|string|Json
+     * @return Json
      */
-    public function save()
+    public function save(): Json
     {
         if ($this->request->isPost()) {
             $data = $this->request->post();

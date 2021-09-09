@@ -44,7 +44,7 @@ class User extends Validate
         'newPwd.length'      => '新密码长度为6~16位',
         'newPwd.checkPwd'    => '新密码必须由大写字母、小写字母、数字组成',
         'rePwd.require'      => '请输入确认密码',
-        'rePwd.confirm'      => '新密码跟确认密码不一致',
+        'rePwd.confirm'      => '新密码跟确认密码不一致'
     ];
 
     // 场景验证

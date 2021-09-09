@@ -31,7 +31,7 @@ class Index extends Admin
     public function getMenuList(): array
     {
         $userInfo = $this->userInfo;
-        if (!$menuList = cache('user_operation_' . $userInfo['id'])) {
+        if (!cache('user_operation_' . $userInfo['id'])) {
             //缓存为空或缓存到期
             $operationService = new OperationService();
             $menuList = $operationService->userMenu($userInfo['id']);

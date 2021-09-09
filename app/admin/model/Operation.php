@@ -74,9 +74,8 @@ class Operation extends Common
             }
         } catch (Exception $e) {
             $result['code'] = 10008;
-            $result['data'] = $e->getMessage();
+            $result['msg'] = $e->getMessage();
         }
-
 
         return $result;
     }
@@ -100,8 +99,16 @@ class Operation extends Common
             $order = $data['sort'] . " " . $data['order'];
         }
 
-        $page = (int)$data['page'] ?: 1;                  //默认第1页
-        $result['limit'] = (int)$data['limit'] ?: 20;     //默认20条数据
+        if (isset($data['page']) && $data['page'] != "") {
+            $page = (int)$data['page'];
+        } else {
+            $page = 1;
+        }
+        if (isset($data['limit']) && $data['limit'] != "") {
+            $result['limit'] = (int)$data['limit'];
+        } else {
+            $result['limit'] = 20;
+        }
 
         $result['where'] = $where;
         $result['field'] = "*";
@@ -131,7 +138,6 @@ class Operation extends Common
                     $list[$k]['perm_type'] = "";
                 }
             }
-
         }
 
         return $list;
@@ -145,7 +151,7 @@ class Operation extends Common
      *
      * @return array|false
      */
-    public function getNoteUrl($id = 0, $recursion = true)
+    public function getNoteUrl(int $id = 0, bool $recursion = true)
     {
         $info = $this->where(['id' => $id])->findOrEmpty();
         if (empty($info)) {
@@ -183,7 +189,7 @@ class Operation extends Common
      *
      * @return array
      */
-    public function getParents($operation_id = 0): array
+    public function getParents(int $operation_id = 0): array
     {
         $result = [];
         $info = $this->where(['id' => $operation_id])->findOrEmpty();
@@ -207,7 +213,7 @@ class Operation extends Common
      *
      * @return array
      */
-    public function userMenu($is_super = false, $roles = []): array
+    public function userMenu(bool $is_super = false, array $roles = []): array
     {
         //普通管理员，取所有的角色所对应的权限
         try {
@@ -246,7 +252,7 @@ class Operation extends Common
      *
      * @return array
      */
-    public function createTree($list, $parent_menu_id, $p_str, $onMenu = [], $allOperation = []): array
+    public function createTree($list, $parent_menu_id, $p_str, array $onMenu = [], array $allOperation = []): array
     {
         $result = [];
         try {
@@ -338,7 +344,7 @@ class Operation extends Common
      *
      * @return array|Json
      */
-    public function getOperationInfo($ctl = 'index', $act = 'index', $model_id = self::MENU_MANAGE)
+    public function getOperationInfo(string $ctl = 'index', string $act = 'index', int $model_id = self::MENU_MANAGE)
     {
         $result = ['msg' => '', 'data' => '', 'status' => false];
         $where = ['type' => 'c', 'code' => $ctl, 'parent_id' => $model_id];
@@ -369,7 +375,7 @@ class Operation extends Common
      *
      * @return array
      */
-    public function menuTree($pid, $defaultNode = [], $level = 1): array
+    public function menuTree($pid, array $defaultNode = [], int $level = 1): array
     {
         try {
             $area_tree = [];
@@ -449,7 +455,7 @@ class Operation extends Common
      *
      * @return bool
      */
-    public function checkDie($id, $p_id, $p_str, $n = 10): bool
+    public function checkDie($id, $p_id, $p_str, int $n = 10): bool
     {
         //设置计数器，防止极端情况下陷入死循环了（其他地方如果设置的有问题死循环的话，这里就报错了）
         if ($n <= 0) {

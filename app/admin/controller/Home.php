@@ -13,7 +13,7 @@ class Home
      *
      * @return View
      */
-    public function index()
+    public function index(): View
     {
         return view();
     }
@@ -23,7 +23,7 @@ class Home
      *
      * @return View
      */
-    public function note()
+    public function note(): View
     {
         return view();
     }
@@ -33,7 +33,7 @@ class Home
      *
      * @return View
      */
-    public function message()
+    public function message(): View
     {
         return view();
     }
@@ -43,7 +43,7 @@ class Home
      *
      * @return View
      */
-    public function theme()
+    public function theme(): View
     {
         return view();
     }

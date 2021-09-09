@@ -54,7 +54,7 @@ class UserRoleOperationRel extends Common
      *
      * @return array|mixed
      */
-    public function getTree($role_id = 0): array
+    public function getTree(int $role_id = 0): array
     {
         $operationModel = new Operation();
         if ($role_id == 0) {
@@ -108,7 +108,7 @@ class UserRoleOperationRel extends Common
      *
      * @return array
      */
-    public function getPerm($user_id = 0): array
+    public function getPerm(int $user_id = 0): array
     {
         $list = $this->distinct(true)->field('o.*')->alias('uror')
             ->join(config('database.prefix') . 'operation o', 'o.id = uror.operation_id')
